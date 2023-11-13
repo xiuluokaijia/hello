@@ -1,249 +1,270 @@
-#include"iostream"
+#include<iostream>
 #include<cstdlib>
-                            //ç©ºæ ¼æ ¼å¼ä¸ä¸€æ ·ï¼Œæœ‰åœ†è§’ç©ºæ ¼æœ‰åŠè§’ç©ºæ ¼
 using namespace std;
+#define MAXSTACK 100
+#define INCREASE 10
 typedef int elementtype;
-typedef struct lnode{
-    elementtype ele; 
-    struct lnode * next;
-}lnode,*linklist;
-typedef struct ptr{
-    linklist head;  //å……å½“å¤´æŒ‡é’ˆçš„ä½œç”¨
-    linklist rear; //å……å½“å°¾æŒ‡é’ˆçš„ä½œç”¨
-}ptr; 
-ptr a={NULL,NULL} ;    //å®šä¹‰å…¨å±€å˜é‡ï¼› 
-                    
-int create(){
-  if(a.head!=NULL){
-    return 0;    //é“¾è¡¨å·²è¢«åˆå§‹åŒ–ä¸”æœªé‡Šæ”¾ç©ºé—´
+typedef struct stack
+{
+  elementtype *base;
+  elementtype *top;
+  int stacklength;
+}stack;
+int create(stack *a){
+  a->base=(elementtype *)malloc(MAXSTACK * sizeof(elementtype));
+  if(!a->base){        //base¼È×÷ÎªÖ¸ÕëÒ²×÷ÎªÊý×é£¬ËùÒÔËµÖ¸ÕëÓëÊý×éÄ³ÖÖÒâÒåÉÏÏàÍ¨
+    return 0;        //·ÖÅäÊ§°Ü
   }
-  
-  a.head=(linklist)malloc(sizeof(lnode));
-  a.head->ele=0;
-  a.head->next=NULL; //å¯¹èŠ‚ç‚¹è¿›è¡Œåˆå§‹åŒ–æ“ä½œ
-  if(a.head==NULL){
-    return 2;    //åˆå§‹åŒ–å¤±è´¥ï¼Œå³açš„å†…å­˜åˆ†é…å¤±è´¥
-  }
-  a.rear=a.head;   //åˆå§‹åŒ–åˆ†é…ç»“ç‚¹ï¼Œå¤´å°¾æŒ‡é’ˆæŒ‡å‘åŒä¸€ä¸ªç»“ç‚¹
-  return 1;      //åˆå§‹åŒ–æˆåŠŸ
+  a->top=a->base;
+  a->stacklength=MAXSTACK;
+  return 1;
 }
-int destory(){     
-  if(a.head==NULL){
-    return 0;    //å‡½æ•°æœªåˆå§‹åŒ–
+int destory(stack *a){
+  if(a->base==NULL){
+    return 0;       //Õ»Î´³õÊ¼»¯»òÕ»ÒÑ±»Ïú»Ù
   }
-  while(a.head!=NULL){
-    a.rear=a.head->next;
-    free(a.head);
-    a.head=a.rear;
-  }
-  return 1;      //é”€æ¯é˜Ÿåˆ—ï¼Œæœ€ç»ˆçŠ¶æ€ä¸‹a.head,a.rearå‡æŒ‡å‘null
+  free(a->base);
+  a->base=NULL;        //Ïú»ÙÖ®ºó¿Õ¼ä²»ÔÙ´æÔÚÔ­Ö¸ÕëÖ¸Ïò²»¿ÉÖª´¦£¬½«ÆäÖ¸Ïònull±£Ö¤º¯Êý²»»á·ÃÎÊµ½Î´¶¨ÒåµÄÖµ
+  a->top=a->base;
+  a->stacklength=0;
+  return 1;
 }
-int clear(){
-  if(a.head==NULL){
-    return 0;    //å‡½æ•°æœªåˆå§‹åŒ–
+int clear(stack *a){
+  if(a->base==NULL){
+    return 0;        //Õ»Î´³õÊ¼»¯»òÒÑ¾­±»Ïú»Ù
   }
-  while(a.head->next!=NULL){   //æ¸…é™¤åˆ°æœ€åŽä¸€ä¸ªç»“ç‚¹æ—¶nextç­‰äºŽnullæ‰€ä»¥è‡ªåŠ¨åœæ­¢äº†
-    a.rear=a.head->next;
-    free(a.head);
-    a.head=a.rear;
+  a->top=a->base;       //ÆäÊµ¾ÍÊÇ·µ»Øµ½³õÊ¼»¯¸Õ¸ÕÍê³ÉµÄ×´Ì¬£¬µÈ´ýÊäÈë¸³Öµ¸²¸Ç£¬ÒÑÊäÈëµÄÖµµÈÍ¬ÓÚËæ»ú·ÖÅäµÄÂÒÂëÁË
+  return 1;
+}
+int judge(stack *a){
+  if(a->base==NULL){
+    return 0;        //Õ»Î´³õÊ¼»¯»òÒÑ¾­±»Ïú»Ù
   }
+  if(a->top-a->base==0){
+    return 1;
+
+  }
+  return 2;    //ÅÐ¿ÕÊ§°Ü£¬²»Îª¿Õ£»
+
+}
+int GetLength(stack *a,int &l){
+  if(a->base==NULL){
+    return 0;        //Õ»Î´³õÊ¼»¯»òÒÑ¾­±»Ïú»Ù
+  }
+  l=a->top-a->base;
+return 1;
+}
+int GetTop(stack *a,int &ele){
+  if(a->base==NULL){
+    return 0;        //Õ»Î´³õÊ¼»¯»òÒÑ¾­±»Ïú»Ù
+  }
+  if(a->top-a->base==0){
+    return 2;        //¿ÕÕ»ÎÞÕ»¶¥ÔªËØ
+  }
+  ele=*(a->top-1);      //*½âÒýÓÃ
   return 1;
 
 }
-int judge(){
-    if(a.head==NULL){
-    return 0;    //å‡½æ•°æœªåˆå§‹åŒ–
+int insert(stack *a ,int ele){
+  if(a->base==NULL){
+    return 0;        //Õ»Î´³õÊ¼»¯»òÒÑ¾­±»Ïú»Ù
   }
-  if(a.head->next==NULL){
-    return 1;    //é˜Ÿåˆ—ä¸ºç©º
+  if(a->top-a->base==MAXSTACK){
+    a->base=(elementtype*)realloc(a->base,(MAXSTACK+INCREASE)*sizeof(elementtype));
   }
-  return 2;      //é˜Ÿåˆ—ä¸ä¸ºç©º
-}
-int GetLength(int& l){    //è®¾é˜Ÿåˆ—é•¿åº¦ä¸ºl
-  if(a.head==NULL){
-    return 0;    //å‡½æ•°æœªåˆå§‹åŒ–
+  if(a->base==NULL){
+    return 2;        //ÖØÐÂ·ÖÅäÄÚ´æÊ§°Ü
   }
-  linklist i=a.head;
-  l=0;        //åˆå§‹åŒ–ä¸´æ—¶æŒ‡é’ˆå’Œé˜Ÿåˆ—é•¿åº¦ï¼
-  while(i!=a.rear){
-    l++;
-    i=i->next;
-  }
+  *(a->top)=ele;       //½âÒýÓÃÖ®ºó¶Ô¿Õ¼ä±¾Éí½øÐÐ¸³Öµ
+  a->top++;          //Í·Ö¸ÕëÔÙ´Î½øÐÐ×ÔÔö    £¡£¡topÉæ¼°µ½×ÔÔöÊ±×¢ÒâÊý×é±¾ÉíµÄÈÝÁ¿ÊÇ·ñ»¹×ã¹»
   return 1;
 }
-int GetFirstEle(int& e){   //è®¾eä¸ºç¬¬ä¸€ä¸ªå…ƒç´ 
-  if(a.head==NULL){
-    return 0;    //å‡½æ•°æœªåˆå§‹åŒ–
+int Delete(stack *a){
+  if(a->base==NULL){
+    return 0;        //Õ»Î´³õÊ¼»¯»òÒÑ¾­±»Ïú»Ù
   }
-  if(a.head==a.rear){
-    return 2 ;   //é˜Ÿåˆ—ä¸ºç©ºå…¶å†…æ— å…ƒç´ 
+  if(a->top-a->base==0){
+    return 2;        //Õ»Îª¿Õ
   }
-  e=a.head->ele;
-  return 1;
-
-}
-int insert(int& ele){    //eleè¡¨ç¤ºå…ƒç´ ï¼Œå› ä¸ºé€»è¾‘ç»“æž„ä¸Šæ˜¯é˜Ÿåˆ—æ‰€ä»¥å¯¹äºŽæ’å…¥çš„ä½ç½®ä¸éœ€è¦è¿›è¡ŒæŒ‡å®š
-  if(a.head==NULL){
-    return 0;    //å‡½æ•°æœªåˆå§‹åŒ–
-  } 
-  linklist x=NULL;
-  x=(linklist)malloc(sizeof(lnode));
-  x->ele=0;      //åªè¦æœ‰æ–°çš„ç»“ç‚¹å‡ºçŽ°å°±è¦å¯¹ç»“ç‚¹è¿›è¡Œåˆå§‹åŒ–è®¾ç½®ä»¥å…å‡ºçŽ°é—®é¢˜
-  x->next=NULL;    //åˆ›å»ºæ–°ç»“ç‚¹ï¼Œç­‰å¾…æ’å…¥é˜Ÿå°¾
-  a.rear->ele=ele;
-  a.rear->next=x;   //å°¾ç»“ç‚¹æŒ‡å‘æ–°èŠ‚ç‚¹ï¼ŒåŒæ—¶å°†æ•°å€¼èµ‹å€¼
-  a.rear=x;      //ç§»åŠ¨å°¾ç»“ç‚¹æˆä¸ºå°¾
+  a->top--;
   return 1;
 }
-int Delete(){
-  if(a.head==NULL){
-    return 0;    //å‡½æ•°æœªåˆå§‹åŒ–
+int ShowAll(stack* a){
+  if(a->base==NULL){
+    return 0;        //Õ»Î´³õÊ¼»¯»òÒÑ¾­±»Ïú»Ù
   }
-  if(a.head==a.rear){
-    return 2;    //æ‰€æœ‰å…ƒç´ å‡å·²åˆ é™¤
+  if(a->top-a->base==0){
+    return 2;        //Õ»Îª¿Õ
   }
-  linklist x=NULL;
-  x=a.head->next;     //å¯¹äºŽæŒ‡é’ˆæ¥è¯´ï¼Œå¼•ç”¨å…¶ç©ºé—´å†…çš„æ•°æ®éœ€è¦è¿›è¡Œè§£å¼•ç”¨   
-  free(a.head);
-  a.head=x;
-  return 1;        //å°†å¤´æŒ‡é’ˆåŽŸæœ¬æ‰€åœ¨çš„é‚£ç‰‡ç©ºé—´é‡Šæ”¾ï¼Œå†å°†å¤´æŒ‡é’ˆæŒ‡å‘çŽ°åœ¨çš„ç¬¬ä¸€ä¸ªç»“ç‚¹
+  elementtype *ptr=a->top-1;
+  while(ptr!=a->base){
+    cout<<*(ptr)<<" ";
+    ptr--;         //×Ô¼õÖ±µ½±éÀúµ½Õ»µ×
+  }
+  cout<<*(ptr)<<endl;
+  return 1;
 }
-int ShowAll(){
-  if(a.head==NULL){
-    return 0;    //å‡½æ•°æœªåˆå§‹åŒ–
+int ScaleChange(int ele,int scale){
+  stack s={NULL,NULL,0};
+  //stackÐÍ³õÊ¼»¯²»ÄÜÖ±½Ó³õÊ¼»¯ËüµÄÖ¸Õë£¬Ö¸Õë×ÜÒªÓÐÖ¸ÏòµÄ¿Õ¼ä£¬
+  //Èç¹û²»·ÖÅäÖ¸ÕëËùÖ¸ÏòµÄ¿Õ¼ä£¬×ÜÒªÉùÃ÷Ö¸ÕëÔ­ÐÍµÄ±äÁ¿ÒÔ´Ë´´½¨·ûºÏÖ¸ÕëÀàÐÍµÄ¿Õ¼ä
+  //Ö¸Õë¾ÍÊÇÖ¸Õë£¬²»ÊÇÖ¸ÕëÔ­ÐÍËù¶ÔÓ¦µÄ±äÁ¿£¬²»ÄÜÖ±½Óµ±×÷Ô­ÐÍÉùÃ÷£¬¸ü²»ÄÜÖ±½Óµ±Ô­ÐÍÊ¹ÓÃ£¬³ý·Ç½âÒýÓÃ
+  create(&s);
+  while(ele>=scale){
+    insert(&s,ele%scale);
+    ele=ele/scale;
   }
-  if(a.head==a.rear){
-    return 2;    //åˆ—è¡¨ä¸ºç©º
+  insert(&s,ele);
+  while(s.top!=s.base){
+    cout<<*(s.top-1);
+    s.top--;
   }
-  linklist i=a.head;
-  while(i!=a.rear){
-    cout<<i->ele<<" ";
-    i=i->next;
-  }
+  destory(&s);
   return 1;
 }
 int main(){
-  cout<<"1.åˆå§‹åŒ–é˜Ÿåˆ—"<<endl;
-  cout<<"2.é”€æ¯é˜Ÿåˆ—"<<endl;
-  cout<<"3.æ¸…ç©ºé˜Ÿåˆ—"<<endl;
-  cout<<"4. é˜Ÿåˆ—åˆ¤ç©º"<<endl;
-  cout<<"5.æ±‚é˜Ÿåˆ—é•¿åº¦"<<endl;
-  cout<<"6.èŽ·å–é˜Ÿå¤´å…ƒç´ "<<endl;
-  cout<<"7.æ’å…¥ä¸€ä¸ªå…ƒç´ "<<endl;
-  cout<<"8.åˆ é™¤ä¸€ä¸ªå…ƒç´ "<<endl;
-  cout<<"9.è¾“å‡ºæ‰€æœ‰å…ƒç´ "<<endl;
-  cout<<"è¾“å…¥ä¸€ä¸ªè´Ÿæ•°é€€å‡ºç¨‹åº"<<endl;
-  int index=0;         //åˆå§‹åŒ–æ“ä½œæ•°
+  cout<<"1.³õÊ¼»¯Õ»"<<endl;
+  cout<<"2.Ïú»ÙÕ»"<<endl;
+  cout<<"3.Çå¿ÕÕ»"<<endl;
+  cout<<"4.Õ»ÅÐ¿Õ"<<endl;
+  cout<<"5.ÇóÕ»³¤¶È"<<endl;
+  cout<<"6.»ñÈ¡Õ»¶¥ÔªËØ"<<endl;
+  cout<<"7.²åÈëÒ»¸öÔªËØ"<<endl;
+  cout<<"8.É¾³ýÒ»¸öÔªËØ"<<endl;
+  cout<<"9.Êä³öËùÓÐÔªËØ"<<endl;
+  cout<<"10.½øÖÆ×ª»»"<<endl;
+  cout<<"ÊäÈë¸ºÊýÍË³ö³ÌÐò"<<endl;
+  stack a={NULL,NULL,0};
   while(true){
-  int ele=0;         //eleä½œä¸ºä¼ å‚çš„å…ƒç´ 
-  int r=0;          //è®¾ç½®rä½œä¸ºè¿”å›žå€¼ç”¨ä»¥æŒ‡ç¤ºå‡½æ•°çš„è¿è¡Œçš„ç»“æžœ
-  cout<<"è¯·è¾“å…¥æ“ä½œæ•°"<<endl;
-  cin>>index;
-  if(index<0){
-    cout<<"é€€å‡ºç¨‹åºï¼"<<endl;
-    break;
+    int index=0;
+    int r=0;    //ÓÃÓÚ´æ´¢º¯ÊýµÄ·µ»ØÖµ
+   
+    int ele=0;
+    int s=0;    //scale
+    cout<<"ÇëÊäÈë²Ù×÷Êý"<<endl;
+    cin>>index;
+    if(index<0){
+      cout<<"ÍË³ö³É¹¦"<<endl;
+      break;
+    }
+    switch(index){
+      case 1:
+        r=create(&a);
+        if(r==1){
+          cout<<"³õÊ¼»¯³É¹¦"<<endl;
+        }
+        if(r==0)
+        {
+          cout<<"³õÊ¼»¯Ê§°Ü"<<endl;
+        }
+        break;
+      case 2:
+        r=destory(&a);
+        if(r==1){
+          cout<<"Ïú»Ù³É¹¦"<<endl;
+        }
+        if(r==0){
+          cout<<"Õ»Î´³õÊ¼»¯»òÕ»ÒÑ±»Ïú»Ù"<<endl;
+        }
+        break;
+      case 3:
+        r=clear(&a);
+        if(r==1){
+          cout<<"Çå¿Õ³É¹¦"<<endl;
+        }
+        if(r==0)
+        {
+          cout<<"Õ»Î´³õÊ¼»¯»òÕ»ÒÑ±»Ïú»Ù"<<endl;
+        }
+        break;
+      case 4:
+        r=judge(&a);
+        if(r==1){
+          cout<<"Õ»Îª¿Õ"<<endl;
+
+        }
+        if(r==0){
+          cout<<"Õ»Î´³õÊ¼»¯»òÒÑ¾­±»Ïú»Ù"<<endl;
+        }
+        if(r==2){
+          cout<<"Õ»²»Îª¿Õ"<<endl;
+        }
+        break;
+      case 5:
+        r=GetLength(&a,ele);        //º¯Êý¶¨ÒåÊ±ÒÑ¾­¶¨ÒåeleÎª&Öµ£¬´«²ÎÊ±×Ô¶¯Ê¶±ðÁËÕâ¸öÀàÐÍ
+        if(r==0){
+          cout<<"Õ»Î´³õÊ¼»¯»òÒÑ¾­±»Ïú»Ù"<<endl;
+        }
+        if(r==1){
+          cout<<"³¤¶ÈÎª"<<ele<<endl;
+        }
+        break;
+      case 6:
+        r=GetTop(&a,ele);
+        if(r==0){
+          cout<<"Õ»Î´³õÊ¼»¯»òÒÑ¾­±»Ïú»Ù"<<endl;
+        }
+        if(r==1){
+          cout<<"Õ»¶¥ÔªËØÎª"<<ele<<endl;
+        }
+        if(r==2)
+        {
+          cout<<"¿ÕÕ»ÎÞÕ»¶¥ÔªËØ"<<endl;
+        }
+        break;
+      case 7:
+        cout<<"ÇëÊäÈëÒª²åÈëµÄÊý"<<endl;
+        cin>>ele;
+        r=insert(&a,ele);
+        if(r==0){
+          cout<<"Õ»Î´³õÊ¼»¯»òÒÑ¾­±»Ïú»Ù"<<endl;
+        }
+        if(r==1){
+          cout<<"²åÈë³É¹¦"<<endl;
+        }
+        if(r==2){
+          cout<<"ÖØÐÂ·ÖÅäÄÚ´æÊ§°Ü"<<endl;
+        }
+        break;
+      case 8:
+        r=Delete(&a);
+        if(r==0){
+          cout<<"Õ»Î´³õÊ¼»¯»òÒÑ¾­±»Ïú»Ù"<<endl;
+        }
+        if(r==2)
+        {
+          cout<<"Õ»Îª¿Õ"<<endl;
+        }
+        if(r==1){
+          cout<<"É¾³ý³É¹¦"<<endl;
+        }
+        break;
+      case 9:
+        r=ShowAll(&a);
+       if(r==0){
+          cout<<"Õ»Î´³õÊ¼»¯»òÒÑ¾­±»Ïú»Ù"<<endl;
+        }
+        if(r==2)
+        {
+          cout<<"Õ»Îª¿Õ"<<endl;
+        }
+        if(r==1){
+          cout<<"Êä³ö³É¹¦"<<endl;
+        }
+        break;
+      case 10:
+        cout<<"ÇëÊäÈëÒª½øÐÐÊýÖÆ×ª»»µÄÊý"<<endl;
+        cin>>ele;
+        cout<<"ÇëÊäÈëÒª×ª»»µÄ½øÖÆ"<<endl;
+        cin>>s;
+        r=ScaleChange(ele,s);
+        if(r==1){
+          cout<<"×ª»»³É¹¦"<<endl;
+        }
+        break;
+      default:
+        break;
+        
   }
-  switch(index){
-    case 1:
-      r=create();
-      if(r==0){
-        cout<<"é˜Ÿåˆ—å·²è¢«åˆå§‹åŒ–ä¸”æœªé‡Šæ”¾ç©ºé—´"<<endl;
-      }
-      if(r==2){
-        cout<<"åˆå§‹åŒ–å¤±è´¥"<<endl;
-      }
-      if(r==1){
-        cout<<"åˆå§‹åŒ–æˆåŠŸ"<<endl;
-      }
-      break;
-    case 2:
-      r=destory();
-      if(r==0){
-        cout<<"é˜Ÿåˆ—æœªåˆå§‹åŒ–"<<endl;
-      }
-      if(r==1){
-        cout<<"é”€æ¯æˆåŠŸ"<<endl;
-      }
-      break;
-    case 3:
-      r=clear();
-      if(r==0){
-        cout<<"é˜Ÿåˆ—æœªåˆå§‹åŒ–"<<endl;
-      }
-      if(r==1){
-        cout<<"æ¸…é™¤æˆåŠŸ"<<endl;
-      }
-      break;
-    case 4:
-      r=judge();
-      if(r==0){
-        cout<<"é˜Ÿåˆ—æœªåˆå§‹åŒ–"<<endl;
-      }
-      if(r==1){
-        cout<<"é˜Ÿåˆ—ä¸ºç©º"<<endl;
-      }
-      if(r==2){
-        cout<<"é˜Ÿåˆ—ä¸ä¸ºç©º"<<endl;
-      }
-      break;
-    case 5:
-      r=GetLength(ele);
-      if(r==0){
-        cout<<"é˜Ÿåˆ—æœªåˆå§‹åŒ–"<<endl;
-      }
-      if(r==1){
-        cout<<"é˜Ÿåˆ—çš„é•¿åº¦ä¸º"<<ele<<endl;
-      }
-      break;
-    case 6:
-      r=GetFirstEle(ele);
-      if(r==0){
-        cout<<"é˜Ÿåˆ—æœªåˆå§‹åŒ–"<<endl;
-      }
-      if(r==1){
-        cout<<"é˜Ÿåˆ—çš„é˜Ÿå¤´å…ƒç´ ä¸º"<<ele<<endl;
-      }
-      if(r==2){
-        cout<<"é˜Ÿåˆ—ä¸ºç©ºæ— é˜Ÿå¤´å…ƒç´ "<<endl;
-      }
-      break;
-    case 7:
-      cout<<"è¯·è¾“å…¥æ’å…¥çš„æ•°æ®"<<endl;
-      cin>>ele;
-      r=insert(ele);
-      if(r==0){
-        cout<<"é˜Ÿåˆ—æœªåˆå§‹åŒ–"<<endl;
-      }
-      if(r==1){
-        cout<<"æ’å…¥æˆåŠŸ"<<endl;
-      }
-      break;
-    case 8:
-      r=Delete();
-      if(r==0){
-        cout<<"é˜Ÿåˆ—æœªåˆå§‹åŒ–"<<endl;
-      }
-      if(r==1){
-        cout<<"åˆ é™¤æˆåŠŸ"<<endl;
-      }
-      if(r==2){
-        cout<<"é˜Ÿåˆ—ä¸ºç©º"<<endl;
-      }
-      break;
-    case 9:
-      r=ShowAll();
-      if(r==0){
-        cout<<"é˜Ÿåˆ—æœªåˆå§‹åŒ–"<<endl;
-      }
-      if(r==1){
-        cout<<"è¾“å‡ºå…¨éƒ¨é˜Ÿåˆ—æˆåŠŸ"<<endl;
-      }
-      if(r==2){
-        cout<<"é˜Ÿåˆ—ä¸ºç©º"<<endl;
-      }
-      break;
-    default:
-      break;
-  }
-  }
+}
 }
